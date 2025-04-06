@@ -37,3 +37,6 @@ output/
 *.mp3
 *.mp4
 *.srt 
+
+# Credentials
+credentials.json

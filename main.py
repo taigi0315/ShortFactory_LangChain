@@ -1,6 +1,9 @@
 from chains.gossip_chain import GossipChain
 from chains.audio_chain import AudioChain
 from chains.video_chain import VideoChain
+from tools.youtube_uploader import YouTubeUploader
+from tools.tiktok_uploader import TikTokUploader
+from tools.instagram_uploader import InstagramUploader
 import os
 from dotenv import load_dotenv
 import argparse
@@ -19,6 +22,9 @@ def main():
     parser = argparse.ArgumentParser(description="YouTube Shorts Gossip Generator")
     parser.add_argument("--topic", type=str, help="대화의 주제")
     parser.add_argument("--background", type=str, required=True, help="배경 비디오 파일 경로")
+    parser.add_argument("--upload", action="store_true", help="소셜 미디어에 업로드")
+    parser.add_argument("--platforms", nargs="+", choices=["youtube", "tiktok", "instagram"], 
+                       default=["youtube"], help="업로드할 플랫폼 선택")
     args = parser.parse_args()
     
     logger.info("🚀 Shorts Generator 시작")
@@ -30,6 +36,16 @@ def main():
     gossip_chain = GossipChain()
     audio_chain = AudioChain()
     video_chain = VideoChain()
+    
+    # 업로더 초기화
+    uploaders = {}
+    if args.upload:
+        if "youtube" in args.platforms:
+            uploaders["youtube"] = YouTubeUploader()
+        if "tiktok" in args.platforms:
+            uploaders["tiktok"] = TikTokUploader()
+        if "instagram" in args.platforms:
+            uploaders["instagram"] = InstagramUploader()
     
     try:
         # 1. 대화 생성
@@ -57,6 +73,39 @@ def main():
         )
         
         logger.info(f"✨ 완료! 생성된 비디오: {output_file}")
+        
+        # 5. 소셜 미디어 업로드
+        if args.upload and uploaders:
+            logger.info("📤 소셜 미디어 업로드 시작...")
+            
+            # 대화 내용을 기반으로 캡션 생성
+            caption = "\n".join([line["text"] for line in dialogue])
+            hashtags = ["#shorts", "#gossip", "#drama"]
+            
+            for platform, uploader in uploaders.items():
+                try:
+                    if platform == "youtube":
+                        uploader.upload_video(
+                            video_path=output_file,
+                            title=args.topic or "Gossip Shorts",
+                            description=caption,
+                            tags=hashtags
+                        )
+                    elif platform == "tiktok":
+                        uploader.upload_video(
+                            video_path=output_file,
+                            caption=caption,
+                            hashtags=hashtags
+                        )
+                    elif platform == "instagram":
+                        uploader.upload_video(
+                            video_path=output_file,
+                            caption=caption,
+                            hashtags=hashtags
+                        )
+                    logger.info(f"✅ {platform} 업로드 완료")
+                except Exception as e:
+                    logger.error(f"❌ {platform} 업로드 실패: {str(e)}")
         
     except Exception as e:
         logger.error(f"❌ 오류 발생: {str(e)}", exc_info=True)
