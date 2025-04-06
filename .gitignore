@@ -40,3 +40,4 @@ output/
 
 # Credentials
 credentials.json
+google_credentials.json

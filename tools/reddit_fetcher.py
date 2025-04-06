@@ -6,6 +6,7 @@ from .reddit_categories import REDDIT_CATEGORIES
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+import time
 
 class RedditFetcher:
     def __init__(self):
@@ -17,12 +18,46 @@ class RedditFetcher:
         )
         
         # Google Sheets 설정
-        scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets']
+        scope = [
+            'https://spreadsheets.google.com/feeds',
+            'https://www.googleapis.com/auth/spreadsheets',
+            'https://www.googleapis.com/auth/drive'
+        ]
+        
         # credentials.json 파일의 절대 경로 설정
-        credentials_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'credentials.json')
-        creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
-        self.sheets_client = gspread.authorize(creds)
-        self.sheet = self.sheets_client.open(os.getenv('GOOGLE_SHEET_NAME')).sheet1
+        credentials_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'google_credentials.json')
+        try:
+            creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
+            self.sheets_client = gspread.authorize(creds)
+            spreadsheet = self.sheets_client.open(os.getenv('GOOGLE_SHEET_NAME'))
+            
+            # 특정 시트 이름으로 접근
+            worksheet_name = 'reddit_story'
+            try:
+                self.sheet = spreadsheet.worksheet(worksheet_name)
+                print(f"Successfully connected to worksheet: {worksheet_name}")
+            except gspread.WorksheetNotFound:
+                # 시트가 없으면 새로 생성
+                self.sheet = spreadsheet.add_worksheet(worksheet_name, 1000, 12)  # 열 개수를 12로 증가
+                # 헤더 추가
+                self.sheet.append_row([
+                    'Title',
+                    'URL',
+                    'Score',
+                    'Comments',
+                    'Content',
+                    'Status',
+                    'Subreddit',
+                    'Category',
+                    'Created Date',
+                    'Updated Date'
+                ])
+                print(f"Created new worksheet: {worksheet_name}")
+                
+        except Exception as e:
+            print(f"Error initializing Google Sheets: {str(e)}")
+            print(f"Credentials path: {credentials_path}")
+            raise
 
     def get_categories(self) -> Dict[str, Dict]:
         """사용 가능한 카테고리 목록을 반환합니다."""
@@ -105,21 +140,27 @@ class RedditFetcher:
                     time_filter=time_filter
                 )
                 results[subreddit_name] = posts
+                # 각 서브레딧의 게시물을 가져온 후 바로 시트에 업데이트
+                self.update_google_sheet(posts, category)
             except Exception as e:
                 print(f"Error fetching posts from r/{subreddit_name}: {str(e)}")
                 results[subreddit_name] = []
+            time.sleep(1)
 
         return results
 
-    def update_google_sheet(self, posts: List[Dict]) -> None:
+    def update_google_sheet(self, posts: List[Dict], category: str = '') -> None:
         """
         게시물 정보를 Google Sheets에 업데이트합니다.
         
         Args:
             posts (List[Dict]): 게시물 정보 리스트
+            category (str): 게시물의 카테고리
         """
         # 시트에 이미 있는 URL 목록 가져오기
         existing_urls = self.sheet.col_values(2)  # URL은 2번째 열
+        
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         for post in posts:
             # 중복 체크
@@ -133,7 +174,9 @@ class RedditFetcher:
                     post['content'],
                     'New',  # 상태
                     post['subreddit'],
-                    datetime.fromtimestamp(post['created_utc']).strftime('%Y-%m-%d %H:%M:%S')
+                    category,  # 카테고리 추가
+                    datetime.fromtimestamp(post['created_utc']).strftime('%Y-%m-%d %H:%M:%S'),
+                    current_time  # 업데이트 시간 추가
                 ])
 
     def get_production_posts(self) -> List[Dict]:
