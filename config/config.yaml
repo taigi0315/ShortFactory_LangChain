@@ -27,9 +27,14 @@ langchain:
 
 # 로깅 설정
 logging:
-  level: "INFO"
+  level: "INFO"  # 기본 로그 레벨
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  file: "logs/shortfactory.log"
+  date_format: "%Y-%m-%d %H:%M:%S"
+  file: "shortfactory.log"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+  console_logging: true  # 콘솔 출력 활성화 여부
+  file_logging: true    # 파일 출력 활성화 여부
 
 # 상태 관리
 status:

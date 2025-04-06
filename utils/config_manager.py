@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import yaml
 from dotenv import load_dotenv
@@ -31,22 +31,32 @@ class ConfigManager:
         
         with open(self.config_path, 'r', encoding='utf-8') as f:
             self._config = yaml.safe_load(f)
-        
-        self._replace_env_vars(self._config)
     
-    def _replace_env_vars(self, config: Dict[str, Any]) -> None:
-        """설정값 중 환경 변수 참조를 실제 값으로 치환"""
+    def _replace_env_vars(self, config: Dict[str, Any], section: str = "") -> None:
+        """
+        설정값 중 환경 변수 참조를 실제 값으로 치환
+        
+        Args:
+            config: 설정 딕셔너리
+            section: 현재 처리 중인 설정 섹션
+        """
         for key, value in config.items():
+            current_section = f"{section}.{key}" if section else key
+            
             if isinstance(value, dict):
-                self._replace_env_vars(value)
+                self._replace_env_vars(value, current_section)
             elif isinstance(value, str) and value.startswith("${") and value.endswith("}"):
                 env_var = value[2:-1]
                 env_value = os.getenv(env_var)
-                if env_value is None:
+                
+                # 로깅 섹션이 아닌 경우에만 환경 변수 필수 체크
+                if env_value is None and not current_section.startswith("logging"):
                     raise ValueError(f"환경 변수를 찾을 수 없습니다: {env_var}")
-                config[key] = env_value
+                
+                if env_value is not None:
+                    config[key] = env_value
     
-    def get(self, key: str, default: Optional[Any] = None) -> Any:
+    def get(self, key: str, default: Any = None) -> Any:
         """
         설정값 조회
         
@@ -61,6 +71,11 @@ class ConfigManager:
             value = self._config
             for k in key.split('.'):
                 value = value[k]
+            
+            # 딕셔너리인 경우 환경 변수 치환
+            if isinstance(value, dict):
+                self._replace_env_vars(value, key)
+            
             return value
         except (KeyError, TypeError):
             return default
