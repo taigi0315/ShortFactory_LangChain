@@ -44,3 +44,5 @@ google_credentials.json
 
 # Logs
 logs/
+
+token.json
