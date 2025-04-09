@@ -15,7 +15,7 @@ reddit:
 google_sheets:
   credentials_file: ${GOOGLE_SHEETS_CREDENTIALS_FILE}
   spreadsheet_id: ${SPREADSHEET_ID}
-  worksheet_name: "Posts"
+  worksheet_name: ${SHEET_NAME}
   max_rows: 1000
 
 # LangChain 설정
