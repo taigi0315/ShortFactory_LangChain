@@ -14,9 +14,11 @@ pydub>=0.25.1
 openai>=1.0.0  # For DALL-E
 google-cloud-aiplatform>=1.0.0  # For Vertex AI
 vertexai>=0.0.1  # For Vertex AI image generation
+langchain-google-genai
+langchain-openai
 
 # Video assembly dependencies
-moviepy>=1.0.3
+moviepy
 ffmpeg-python>=0.2.0
 
 # Testing dependencies

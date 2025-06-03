@@ -61,6 +61,16 @@ clean:
 # 개발 환경 초기화
 init: clean install format
 
+# 가상환경 활성화 (Windows/Mac/Linux)
+activate-venv:
+	@echo "Use Following command to activate venv"
+	@echo "venv\Scripts\activate.bat"
+	@echo "venv\Scripts\Activate.ps1"
+# Google Cloud 인증 및 프로젝트 설정
+gcloud-auth:
+	gcloud auth login
+	gcloud auth application-default set-quota-project gen-lang-client-0273830092
+
 # 도움말
 help:
 	@echo "사용 가능한 명령어:"
@@ -71,4 +81,6 @@ help:
 	@echo "  make format    - 코드 포맷팅"
 	@echo "  make clean     - 캐시 및 임시 파일 정리"
 	@echo "  make init      - 개발 환경 초기화"
-	@echo "  make help      - 도움말 표시" 
+	@echo "  make activate-venv - 가상환경 활성화 안내"
+	@echo "  make gcloud-auth  - Google Cloud 인증 및 프로젝트 설정"
+	@echo "  make help      - 도움말 표시"

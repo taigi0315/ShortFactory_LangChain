@@ -12,6 +12,11 @@ load_dotenv()
 
 class Config:
     """Configuration class for the ShortFactory application."""
+    # LLM Model Names
+    GEMINI_PRO_MODEL_NAME = "gemini-2.5-pro-preview-03-25"
+    GEMINI_MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", GEMINI_PRO_MODEL_NAME)
+    OPENAI_GPT_3_5_TURBO_MODEL_NAME = "gpt-3.5-turbo"
+    OPENAI_MODEL_NAME = os.getenv("OPENAI_MODEL_NAME", OPENAI_GPT_3_5_TURBO_MODEL_NAME)
     
     # Story Generation Configuration
     STORY_SUBJECT = os.getenv("STORY_SUBJECT", "A mischievous squirrel trying to steal a giant acorn from a grumpy wizard's garden.")
@@ -19,7 +24,7 @@ class Config:
 
     # Narration Configuration
     TTS_PROVIDER = os.getenv("TTS_PROVIDER", "elevenlabs")  # Options: "elevenlabs", "google_cloud_tts"
-    ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4Fnqa80wBMgs")  # Default voice ID
+    ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "onwK4e9ZLuTAKqWW03F9")  # Default voice ID
 
     # Image Generation Configuration
     IMAGE_PROVIDER = os.getenv("IMAGE_PROVIDER", "google_vertex_ai_image")  # Options: "openai_dalle", "google_vertex_ai_image", "stable_diffusion_api"

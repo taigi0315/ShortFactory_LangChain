@@ -34,14 +34,14 @@ def create_llm(llm_provider: str = "gemini"):
             raise ValueError("GOOGLE_API_KEY not found in environment variables.")
             
         logger.info("Initializing Gemini Pro LLM...")
-        return ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.7)
+        return ChatGoogleGenerativeAI(model=Config.GEMINI_MODEL_NAME, temperature=0.7)
     elif llm_provider.lower() == "openai":
         api_key = Config.get_api_key("openai")
         if not api_key:
             raise ValueError("OPENAI_API_KEY not found in environment variables.")
             
         logger.info("Initializing OpenAI GPT LLM...")
-        return ChatOpenAI(model="gpt-3.5-turbo", temperature=0.7)
+        return ChatOpenAI(model=Config.OPENAI_MODEL_NAME, temperature=0.7)
     else:
         raise ValueError(f"Unsupported LLM provider: {llm_provider}")
 
