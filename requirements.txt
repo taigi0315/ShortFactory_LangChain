@@ -4,6 +4,22 @@ elevenlabs>=0.2.0
 python-dotenv==1.0.1
 ffmpeg-python>=0.2.0
 pydantic>=2.0.0
+python-dotenv>=1.0.0
+
+# TTS dependencies
+requests>=2.28.0
+pydub>=0.25.1
+
+# Image generation dependencies
+openai>=1.0.0  # For DALL-E
+google-cloud-aiplatform>=1.0.0  # For Vertex AI
+vertexai>=0.0.1  # For Vertex AI image generation
+
+# Video assembly dependencies
+moviepy>=1.0.3
+ffmpeg-python>=0.2.0
+
+# Testing dependencies
 pytest>=7.0.0
 pytest-cov>=4.0.0
 black>=23.0.0

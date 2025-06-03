@@ -1,23 +1,46 @@
-# 📽️ Shorts Gossip Generator (LangChain Edition)
+# 📽️ ShortFactory (LangChain Edition)
 
-YouTube Shorts를 위한 자동화된 드라마틱한 대화 생성기입니다. GPT, 감정 TTS, 자막, 비디오 편집을 결합하여 바이럴이 될 수 있는 쇼츠를 생성합니다.
+A professional YouTube Shorts generation framework built with LangChain. This tool combines AI story generation, text-to-speech narration, image generation, and video assembly to create engaging YouTube Shorts automatically.
 
-## 🚀 기능
+## 🚀 Features
 
-- GPT를 사용한 감정이 담긴 드라마틱한 대화 생성
-- ElevenLabs를 활용한 감정이 담긴 음성 합성
-- 자동 자막 생성 및 타이밍 조정
-- 배경 비디오와 오디오, 자막을 결합한 최종 YouTube Shorts 생성
+- AI-powered story generation using Google's Gemini Pro
+- Multiple scene generation with coherent narrative flow
+- High-quality text-to-speech narration with ElevenLabs (or Google Cloud TTS)
+- Image generation with multiple providers (OpenAI DALL-E, Google Vertex AI Imagen)
+- Automatic video assembly with seamless transitions
+- Modular and extensible architecture for easy customization
 
-## 🛠️ 설치 방법
+## 📂 Project Structure
 
-1. 저장소 클론
-```bash
-git clone https://github.com/yourusername/shorts-gossip-langchain.git
-cd shorts-gossip-langchain
+```
+ShortFactory_LangChain/
+├── docs/                     # Documentation
+├── src/                      # Source code
+│   ├── shortfactory/         # Main package
+│   │   ├── assemblers/       # Video assembly components
+│   │   ├── config/           # Configuration settings
+│   │   ├── core/             # Core orchestration logic
+│   │   ├── generators/       # Content generation modules
+│   │   ├── models/           # Data models
+│   │   └── utils/            # Utility functions
+│   └── main.py               # Application entry point
+├── tests/                    # Test suite
+├── .env.example              # Example environment variables
+├── main.py                   # Simplified entry point
+├── requirements.txt          # Project dependencies
+└── README.md                 # Project documentation
 ```
 
-2. 가상환경 생성 및 활성화
+## 🛠️ Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/ShortFactory_LangChain.git
+cd ShortFactory_LangChain
+```
+
+2. Create and activate a virtual environment
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
@@ -25,38 +48,84 @@ source venv/bin/activate  # Linux/Mac
 .\venv\Scripts\activate  # Windows
 ```
 
-3. 의존성 설치
+3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-4. 환경 변수 설정
-`.env` 파일을 생성하고 다음 변수들을 설정하세요:
+4. Set up environment variables
+Copy `.env.example` to `.env` and configure your API keys:
 ```
+GOOGLE_API_KEY=your_google_api_key
+ELEVEN_LABS_API_KEY=your_elevenlabs_api_key
 OPENAI_API_KEY=your_openai_api_key
-ELEVENLABS_API_KEY=your_elevenlabs_api_key
 ```
 
-## 💻 사용 방법
+## 💻 Usage
+
+### Basic Usage
 
 ```bash
-python main.py
+python main.py --subject "A curious cat exploring a magical library" --scenes 5
 ```
 
-## 🧪 테스트
+### Advanced Options
 
 ```bash
-python -m pytest tests/
+python main.py \
+  --subject "An astronaut discovering an alien civilization" \
+  --scenes 6 \
+  --tts-provider elevenlabs \
+  --image-provider google_vertex_ai_image \
+  --gcp-project-id your-gcp-project-id \
+  --output-prefix space_adventure
 ```
 
-## 📝 라이선스
+## 🧩 Components
 
-이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+### Story Generator
+Uses Google's Gemini Pro to create a structured story with scenes, characters, and visual descriptions.
 
-## 🤝 기여하기
+### Narration Generator
+Converts text to speech using ElevenLabs or Google Cloud TTS for high-quality narration.
+
+### Visual Generator
+Generates images for each scene using OpenAI DALL-E or Google Vertex AI Imagen.
+
+### Video Assembler
+Combines images and audio narration to create the final video with transitions.
+
+## 🧪 Testing
+
+Run all tests with coverage reporting:
+
+```bash
+python run_tests.py
+```
+
+Run specific test modules with verbose output:
+
+```bash
+python run_tests.py tests/test_story_generator.py -v
+```
+
+The test suite includes:
+
+- Unit tests for all generators (story, narration, visual)
+- Unit tests for the video assembler
+- Integration tests for the ShortVideoFactory
+- Configuration and environment variable tests
+
+Each test is designed to run independently, using mocks for external dependencies and temporary directories for file operations.
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request 
+5. Open a Pull Request
